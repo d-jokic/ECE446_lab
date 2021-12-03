@@ -58,3 +58,27 @@ legend({'Full','Professional','Working','Basic'})
 saveas(gcf, 'proficiency_dist.png');
 
 
+
+%% Search with features
+
+
+
+file_list = find_files(["english","professional","",""]);
+
+
+
+function match_file_list = find_files(features)
+    match_file_list = [];
+    keyset = ["LANGUAGE","PROFICIENCY", "F_NAME", "L_NAME"];
+    meta_size = height(metadata);
+    for entry=1:meta_size(1)
+        for key=1:length(keyset)
+            if ~strcmp(features(key), metadata(entry,key))
+                filename = metadata(entry,LANGUAGE) + '_' + metadata(entry,PROFICIENCY) + '_' + metadata(entry,F_NAME) + '_' + metadata(entry,L_NAME) + '_' + metadata(entry,PROFICIENCY)+ '.' + metadata(entry,TYPE);
+                match_file_list = [match_file_list, filename ];
+            end
+        end
+    end
+
+end
+
