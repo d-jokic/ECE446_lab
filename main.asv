@@ -51,10 +51,9 @@ for l=1:length(lan)
 end
 
 X = categorical({'English','French','German','Serbo-Croatian'});
-bar(X,y);
+bar(X,y)
 ylabel("Number of Participants")
-title("Distribution of Language Proficiencies")
+title("Distribu")
 legend({'Full','Professional','Working','Basic'})
-saveas(gcf, 'proficiency_dist.png');
 
 
