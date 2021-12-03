@@ -58,3 +58,30 @@ legend({'Full','Professional','Working','Basic'})
 saveas(gcf, 'proficiency_dist.png');
 
 
+%% Search with features
+
+
+
+file_list = find_files(["german","full","",""], metadata);
+
+
+
+function match_file_list = find_files(features, metadata)
+    % Usage find_files([language,proficiency,first_name,last_name], metadata)
+    match_file_list = [];
+    keyset = ["LANGUAGE","PROFICIENCY", "F_NAME", "L_NAME"];
+    meta_size = height(metadata);
+    for entry=1:meta_size
+        append_flag =true;
+
+        for k=1:length(keyset)
+            append_flag = append_flag & (strcmp(features(k),"") | strcmp(features(k), metadata{entry,keyset(k)}));
+        end
+
+        if append_flag
+            filename = metadata{entry,"LANGUAGE"} + "_" + metadata{entry,"PROFICIENCY"} + "_" + metadata{entry,"F_NAME"} + "_" + metadata{entry,"L_NAME"} + "." + metadata{entry,"TYPE"};
+            match_file_list = [match_file_list, filename ];
+        end
+    end
+
+end
