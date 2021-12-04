@@ -2,6 +2,7 @@
 
 metadata = metadata_init( "./clean_audio");
 
+
 % number of samples of each language
 en_samples = sum(strcmp(metadata.LANGUAGE, 'english'));
 fr_samples = sum(strcmp(metadata.LANGUAGE, 'french'));
@@ -34,8 +35,17 @@ saveas(gcf, 'proficiency_dist.png');
 
 %% Search with features
 
-
 file_list = find_match_files(["english","full","",""], metadata);
 
 
+
+%% Insensity related methods
+
+[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+
+si = soundIntensityMethods();
+
+intensity = si.avg_sound_intensity(y);
+
+intensity_derivative = si.avg_sound_intensity_derivative(y);
 

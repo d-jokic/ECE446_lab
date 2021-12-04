@@ -43,30 +43,42 @@ file_list = find_match_files(["english","full","",""], metadata);
 si = soundIntensityMethods();
 
 
-[y,Fs] = audioread("./clean_audio/english_full_akhil_lalwani.m4a");
+[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+
+N=length(y);
+time = (0:N)/Fs;
+freqs = (0:(N/2))*Fs/N;
 
 % 
 % avg = si.avg_sound_intensity(y);
 
-intensity = abs(y);
-env = envelope(intensity,1000, 'peak');
-indexOfLoud = env > 0.1 * max(env);
-onlyLoudParts = env(indexOfLoud);
+avg = si.avg_sound_intensity_derivative(y);
 
-avg = mean(onlyLoudParts);
-val = avg * ones(1,length(onlyLoudParts));
 
-figure(1)
-tiledlayout(3,1)
-
-nexttile()
-plot(abs(y))
-
-nexttile()
-plot(1:length(env), env, 1:length(env), indexOfLoud)
-
-nexttile()
-plot(1:length(onlyLoudParts), onlyLoudParts, 1:length(onlyLoudParts),val)
+% intensity = abs(y);
+% env = envelope(intensity,1000, 'peak');
+% der = diff(env);
+% 
+% avg = mean(abs(der));
+% val = avg * ones(1,length(der));
+% 
+% f_der = abs(fft(y));
+% f_der = f_der(1:N/2+1);
+% f_der(2:end-1) = 2*f_der(2:end-1);
+% 
+% 
+% 
+% figure(1)
+% tiledlayout(3,1)
+% 
+% nexttile()
+% plot(env)
+% 
+% nexttile()
+% plot(1:length(der),der, 1:length(der),val)
+% 
+% nexttile()
+% plot(freqs,f_der);
 
 
 

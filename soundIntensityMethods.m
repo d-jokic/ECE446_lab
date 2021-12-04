@@ -2,23 +2,6 @@ classdef soundIntensityMethods
     %SOUNDINTENSITYMETHODS  
     % Defines the methods related to sound intensity
     
-%     properties
-%         Property1
-%     end
-    
-%     methods
-%         function obj = soundIntensityMethods(inputArg1,inputArg2)
-%             %SOUNDINTENSITYMETHODS Construct an instance of this class
-%             %   Detailed explanation goes here
-%             obj.Property1 = inputArg1 + inputArg2;
-%         end
-%         
-%         function outputArg = method1(obj,inputArg)
-%             METHOD1 Summary of this method goes here
-%               Detailed explanation goes here
-%             outputArg = obj.Property1 + inputArg;
-%         end
-%     end
      methods(Static)
          function mean_intensity = avg_sound_intensity(sig)
 
@@ -36,7 +19,6 @@ classdef soundIntensityMethods
             
             % average on the parts when the person's speaking
             mean_intensity = mean(onlyLoudParts);
-            val = amean_intensity * ones(1,length(onlyLoudParts));
             
             if plot_flag 
                 figure(1)
@@ -49,11 +31,42 @@ classdef soundIntensityMethods
                 plot(1:length(env), env, 1:length(env), indexOfLoud)
                 
                 nexttile()
-                plot(1:length(onlyLoudParts), onlyLoudParts, 1:length(onlyLoudParts),val);
+                plot(1:length(onlyLoudParts), onlyLoudParts, 1:length(onlyLoudParts),mean_intensity * ones(1,length(onlyLoudParts)));
                 hold on;
             end
-       end
-     end
+         end
+
+         function mean_intensity_derivative = avg_sound_intensity_derivative(sig)
+
+            plot_flag = false;   % the plot doesn't show even when true ...
+            
+            % absolut value of sig
+            intensity = abs(sig);
+
+            % detect envelope
+            env = envelope(intensity,1000, 'peak');
+
+            % compute the derivative of the intensity
+            der = diff(env);
+            
+            % take
+            mean_intensity_derivative = mean(abs(der));
+            
+            if plot_flag 
+
+                figure(1)
+                tiledlayout(2,1)
+                
+                nexttile()
+                plot(env)
+                
+                nexttile()
+                plot(1:length(der),der, 1:length(der),mean_intensity_derivative * ones(1,length(der)))
+            end
+         end
+     
+     
+    end
     
 end
 
