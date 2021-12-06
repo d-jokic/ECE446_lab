@@ -1,31 +1,6 @@
 %% Retrieve metadata
 
-clean_audio_path = "./clean_audio";
-files = dir(clean_audio_path);
-
-LANGUAGE = [];
-PROFICIENCY = [];
-F_NAME = [];
-L_NAME = [];
-TYPE = [];
-
-for k=1:length(files)
-    filename = files(k).name;
-
-    if ~strcmp(filename,'.') && ~strcmp(filename,'..')
-        name = split(filename,'.');
-        features =  split(name(1),'_');
-        
-        LANGUAGE = [LANGUAGE, string(features(1))];
-        PROFICIENCY= [PROFICIENCY, string(features(2))];
-        F_NAME =[F_NAME, string(features(3))];
-        L_NAME = [L_NAME, string(features(4))];
-        TYPE = [TYPE, string(name(2))];
-    end
-end
-
 metadata = metadata_init( "./clean_audio");
-
 
 % number of samples of each language
 en_samples = sum(strcmp(metadata.LANGUAGE, 'english'));
@@ -56,20 +31,54 @@ title("Distribution of Language Proficiencies")
 legend({'Full','Professional','Working','Basic'})
 saveas(gcf, 'proficiency_dist.png');
 
+
 %% Search with features
+
 
 file_list = find_match_files(["english","full","",""], metadata);
 
 
-
-%% Insensity related methods
-
-[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+%% Sound Intensity related methods
 
 si = soundIntensityMethods();
 
-intensity = si.avg_sound_intensity(y);
 
-intensity_derivative = si.avg_sound_intensity_derivative(y);
+[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+
+N=length(y);
+time = (0:N)/Fs;
+freqs = (0:(N/2))*Fs/N;
+
+% 
+% avg = si.avg_sound_intensity(y);
+
+avg = si.avg_sound_intensity_derivative(y);
+
+
+% intensity = abs(y);
+% env = envelope(intensity,1000, 'peak');
+% der = diff(env);
+% 
+% avg = mean(abs(der));
+% val = avg * ones(1,length(der));
+% 
+% f_der = abs(fft(y));
+% f_der = f_der(1:N/2+1);
+% f_der(2:end-1) = 2*f_der(2:end-1);
+% 
+% 
+% 
+% figure(1)
+% tiledlayout(3,1)
+% 
+% nexttile()
+% plot(env)
+% 
+% nexttile()
+% plot(1:length(der),der, 1:length(der),val)
+% 
+% nexttile()
+% plot(freqs,f_der);
+
 
 
