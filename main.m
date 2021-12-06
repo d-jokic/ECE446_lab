@@ -24,8 +24,6 @@ for k=1:length(files)
     end
 end
 
-
-
 metadata = table(LANGUAGE,PROFICIENCY,F_NAME,L_NAME,TYPE);
 
 % number of samples of each language
@@ -56,5 +54,6 @@ ylabel("Number of Participants")
 title("Distribution of Language Proficiencies")
 legend({'Full','Professional','Working','Basic'})
 saveas(gcf, 'proficiency_dist.png');
+
 
 
