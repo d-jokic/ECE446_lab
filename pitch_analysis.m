@@ -2,8 +2,9 @@ clear;
 clc;
 
 %Plot controlling variables 
-plot_tiles = 1;
-plot_stats = 1;
+plot_tiles = 0;
+plot_stats = 0;
+plot_fft = 1;
 
 metadata = metadata_init( "./clean_audio");
 
@@ -17,7 +18,7 @@ end
 all_avg_pitches = NaN(length(participants(:,1)), 4);
 
 % loop through every participant
-for i = 1
+for i = 1:2
     disp(" ");
     file_list = find_match_files(["","",participants(i, 1),participants(i,2)], metadata);
     
@@ -30,6 +31,19 @@ for i = 1
         
         %create time array
         t = (0:size(x,1)-1)/fs;
+
+        %---------FFT-----------%
+        F = fft(x);
+        f = fs*(0:(length(x)/2))/length(x); %frequency axis for graph depends on Fs
+        
+        fft_double = abs(F/length(x));                %2-sided spectrum, has twice the number of points needed
+        
+        %create 1-sided spectrum; it is mirrored at freq = 0
+        %move all to one side, therefore need to double the magnitude
+        fft_single = fft_double(1:(length(x)/2)+1);  
+        fft_single(2:end-1) = 2*fft_single(2:end-1); 
+        
+        %-----------------------%
         
         %run pitch funtion on whole signal
         winLength = round(0.05*fs);
@@ -38,9 +52,9 @@ for i = 1
         tf0 = idx/fs;
         
         %create new signal with silence removed
-        newAudio = x(1:0.2*fs);
-        thres = 5*max(newAudio);
-        indexOfSound = abs(x) > thres;
+        silence = x(1:0.2*fs); %find value of silence at start
+        thres = 5*max(silence); %create threshold based on silence
+        indexOfSound = abs(x) > thres; %create new signal by removing silence using created threshold
         onlySound = x(indexOfSound);
         t_OnlySound = (0:size(onlySound,1)-1)/fs;
         
@@ -51,9 +65,9 @@ for i = 1
         f0_OnlySound_2 = f0_OnlySound;
         tf0_OnlySound_2 = tf0_OnlySound;
         
-        %run harmonic ratio on new signal
+        %run harmonic ratio on new signal to find harmonic sections
         hr = harmonicRatio(onlySound,fs,"Window",hamming(winLength,'periodic'),"OverlapLength",overlapLength);
-        threshold = 0.7*max(hr);
+        threshold = 0.7*max(hr); %create threshold
         f0_OnlySound_2(hr < threshold) = nan;
         tf0_OnlySound_2(hr < threshold) = nan;
         
@@ -110,13 +124,20 @@ for i = 1
             end
         end
 
-
-
         name = regexprep(file_list(j),'_', ' ');
         name = regexprep(name,'.m4a', '');
         name = regexprep(name,'.wav', '');
             
         fprintf("Average pitch for %s = %d Hz \n", name, round(avg_pitch));
+
+        if plot_fft == 1
+            figure('Name' , strcat("FFT Analysis - ", upper(name)))
+            plot(f, fft_single)
+            title('Frequency vs Amplitude')
+            xlabel('Frequency (Hz)')
+            ylabel('|Amplitude|')
+        end
+
 
         if plot_tiles == 1
             figure('Name' , upper(name))
@@ -181,7 +202,7 @@ if plot_stats == 1
         end
     end
 
-    figure(i*j + 2)
+    figure(i*j*2)
     scatter(par, all_avg_pitches(:,1), 'filled')
     hold on
     scatter(par, all_avg_pitches(:,2), 'filled')
