@@ -1,5 +1,9 @@
+clear;
+clc;
+
 %Plot controlling variables 
 plot_tiles = 0;
+plot_stats = 0;
 
 metadata = metadata_init( "./clean_audio");
 
@@ -9,6 +13,9 @@ for i = 1:length(metadata.F_NAME)
         participants(i, 2) = metadata.L_NAME(i);
     end
 end
+
+all_avg_pitches = NaN(length(participants(:,1)), 4);
+
 % loop through every participant
 for i = 1:length(participants)
     disp(" ");
@@ -16,9 +23,19 @@ for i = 1:length(participants)
     
     %loop though all languages
     for j = 1:length(file_list)
-        path = strcat('./clean_audio/', file_list(j));
-        [x, fs] = audioread(path);
         
+        if contains(file_list(j),"full")
+            proficiency(i,j) = "full";
+        elseif contains(file_list(j), "professional")
+            proficiency(i,j) = "professional";
+        elseif contains(file_list(j), "working")
+            proficiency(i,j) = "working";
+        elseif contains(file_list(j), "basic")
+            proficiency(i,j) = "basic";
+        end
+
+        path = strcat('./clean_audio/', file_list(j));
+        [x, fs] = audioread(path);        
         
         %create time array
         t = (0:size(x,1)-1)/fs;
@@ -45,7 +62,7 @@ for i = 1:length(participants)
         
         %run harmonic ratio on new signal
         hr = harmonicRatio(onlySound,fs,"Window",hamming(winLength,'periodic'),"OverlapLength",overlapLength);
-        threshold = 0.8;
+        threshold = 0.7*max(hr);
         f0_OnlySound_2(hr < threshold) = nan;
         tf0_OnlySound_2(hr < threshold) = nan;
         
@@ -53,14 +70,24 @@ for i = 1:length(participants)
         f0_final = f0_OnlySound_2(~isnan(f0_OnlySound_2));
         tf0_final = tf0_OnlySound_2(~isnan(tf0_OnlySound_2));
         
-        avg_mean = mean(f0_final);
-        avg_mean_array = avg_mean .* ones(length(f0_final), 1);
-        
+        avg_pitch = mean(f0_final);
+        avg_mean_array = avg_pitch .* ones(length(f0_final), 1);
+
+        if contains(path,'english') == 1
+            all_avg_pitches(i,1) = avg_pitch;
+        elseif contains(path,'french') == 1
+            all_avg_pitches(i,2) = avg_pitch;
+        elseif contains(path,'german') == 1
+            all_avg_pitches(i,3) = avg_pitch;
+        else
+            all_avg_pitches(i,4) = avg_pitch;
+        end
+
         name = regexprep(file_list(j),'_', ' ');
         name = regexprep(name,'.m4a', '');
         name = regexprep(name,'.wav', '');
             
-        disp(sprintf("Average pitch for %s = %d Hz", name, round(avg_mean)));
+        fprintf("Average pitch for %s = %d Hz \n", name, round(avg_pitch));
 
         if plot_tiles == 1
             figure('Name' , upper(name))
@@ -103,7 +130,36 @@ for i = 1:length(participants)
             axis tight
             hold on
             plot(tf0_final,avg_mean_array)
+            hold off
+            saveas(gcf, name)
+
         end
 
     end
 end
+
+par = [1:length(participants(:,1))];
+
+if plot_stats == 1
+
+    figure(i*j + 2)
+    scatter(par, all_avg_pitches(:,1), 'filled')
+    hold on
+    scatter(par, all_avg_pitches(:,2), 'filled')
+    hold on
+    scatter(par, all_avg_pitches(:,3), 'filled')
+    hold on
+    scatter(par, all_avg_pitches(:,4), 'filled')
+    
+    xlabel("Participant")
+    ylabel("Average Pitch (Hz)")
+
+    legend("English","French","German","Serbo-Croatian")
+
+    hold off
+end
+
+avg_eng_pitch = mean(all_avg_pitches(:,1));
+avg_fre_pitch = mean(all_avg_pitches(:,2));
+avg_ger_pitch = mean(all_avg_pitches(:,3));
+avg_sc_pitch = mean(all_avg_pitches(:,4));
