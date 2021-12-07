@@ -3,8 +3,6 @@ classdef soundIntensityMethods
     % Defines the methods related to sound intensity
     % the plot flag is meant to allow plotting the steps of the
 
-    
-    
      methods(Static)
          function mean_intensity = avg_sound_intensity(sig, plot_flag)
             
@@ -31,7 +29,7 @@ classdef soundIntensityMethods
                 plot(abs(sig))
 
                 xlabel("time")
-                ylabel("signal")
+                ylabel("amplitude")
         
                 title("Absolute signal")
                 
@@ -45,7 +43,7 @@ classdef soundIntensityMethods
                 alpha(.3)
 
                 xlabel("time")
-                ylabel("signal")
+                ylabel("amplitude")
         
                 title("Signal envelope")
 
@@ -56,7 +54,7 @@ classdef soundIntensityMethods
                 plot(1:length(onlyLoudParts), onlyLoudParts, 1:length(onlyLoudParts),mean_intensity * ones(1,length(onlyLoudParts)));
                 
                 xlabel("time")
-                ylabel("signal")
+                ylabel("amplitude")
         
                 title("Trimmered signal envelope (silence removed)")
 
@@ -92,7 +90,7 @@ classdef soundIntensityMethods
                 plot(env)
 
                 xlabel("time")
-                ylabel("signal")
+                ylabel("amplitude")
         
                 title("Signal envelope")
                 
@@ -101,7 +99,7 @@ classdef soundIntensityMethods
                 plot(1:length(der),der, 1:length(der),mean_intensity_derivative * ones(1,length(der)))
                 
                 xlabel("time")
-                ylabel("signal")
+                ylabel("amplitude")
         
                 title("Derivative of signal envelope")
                 

@@ -47,7 +47,9 @@ end
 
 %% Plot the intensity results
 
+tiledlayout(2,1)
 
+nexttile
 scatter(1:N_participants, results_int(:,1), 'filled')
 hold on
 scatter(1:N_participants, results_int(:,2), 'filled')
@@ -64,9 +66,8 @@ ylabel("Average Intensity")
 
 legend("English","French","German","Serbo-Croatian")
 
-hold off
-%% Plot intensity derivative results
 
+nexttile
 scatter(1:N_participants, results_der_int(:,1), 'filled')
 hold on
 scatter(1:N_participants, results_der_int(:,2), 'filled')
@@ -82,3 +83,8 @@ ylabel("Average Intensity Derivative")
 legend("English","French","German","Serbo-Croatian")
 
 hold off
+
+
+
+
+

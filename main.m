@@ -75,7 +75,7 @@ intensity_derivative = si.avg_sound_intensity_derivative(y, true);
 
 %% Pace related methods
 
-[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+[y,Fs] = audioread("./clean_audio/french_working_diana_jokic.m4a");
 
 duration = audio_duration(y, Fs, true); % third argument is plot_flag
 
