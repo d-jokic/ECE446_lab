@@ -68,8 +68,14 @@ file_list = find_match_files(["english","full","",""], metadata);
 
 si = soundIntensityMethods();
 
-intensity = si.avg_sound_intensity(y);
+intensity = si.avg_sound_intensity(y, true);
 
-intensity_derivative = si.avg_sound_intensity_derivative(y);
+intensity_derivative = si.avg_sound_intensity_derivative(y, true);
 
+
+%% Pace related methods
+
+[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+
+duration = audio_duration(y, Fs, true); % third argument is plot_flag
 

@@ -45,40 +45,18 @@ si = soundIntensityMethods();
 
 [y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
 
-N=length(y);
-time = (0:N)/Fs;
-freqs = (0:(N/2))*Fs/N;
 
-% 
 % avg = si.avg_sound_intensity(y);
 
 avg = si.avg_sound_intensity_derivative(y);
 
+%% Pace related methods
 
-% intensity = abs(y);
-% env = envelope(intensity,1000, 'peak');
-% der = diff(env);
-% 
-% avg = mean(abs(der));
-% val = avg * ones(1,length(der));
-% 
-% f_der = abs(fft(y));
-% f_der = f_der(1:N/2+1);
-% f_der(2:end-1) = 2*f_der(2:end-1);
-% 
-% 
-% 
-% figure(1)
-% tiledlayout(3,1)
-% 
-% nexttile()
-% plot(env)
-% 
-% nexttile()
-% plot(1:length(der),der, 1:length(der),val)
-% 
-% nexttile()
-% plot(freqs,f_der);
+[y,Fs] = audioread("./clean_audio/english_professional_borjana_kuntos.m4a");
+
+
+duration = audio_duration(y, Fs, true);
+
 
 
 
