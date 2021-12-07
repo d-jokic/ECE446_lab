@@ -2,7 +2,7 @@ clear;
 clc;
 
 %Plot controlling variables 
-plot_tiles = 0;
+plot_tiles = 1;
 plot_stats = 1;
 
 metadata = metadata_init( "./clean_audio");
@@ -17,7 +17,7 @@ end
 all_avg_pitches = NaN(length(participants(:,1)), 4);
 
 % loop through every participant
-for i = 1:length(participants)
+for i = 1
     disp(" ");
     file_list = find_match_files(["","",participants(i, 1),participants(i,2)], metadata);
     
@@ -160,7 +160,7 @@ for i = 1:length(participants)
             hold on
             plot(tf0_final,avg_mean_array)
             hold off
-            saveas(gcf, name)
+            saveas(gcf, strcat("./figures/",name,".png"))
 
         end
 
@@ -174,7 +174,7 @@ if plot_stats == 1
     par = [1:length(participants(:,1))];
 
     for i = 1:length(all_avg_pitches(:,1))
-        for j = 1:4
+        for j = 1:length(all_avg_pitches(1,:))
             if(proficiency(i,j) == "full")
                 full_array(i) = all_avg_pitches(i,j);
             end
@@ -199,6 +199,8 @@ if plot_stats == 1
     legend("English","French","German","Serbo-Croatian", "Native Language")
 
     hold off
+
+    saveas(gcf, strcat("./figures/pitch_stats.png"))
 end
 
 
