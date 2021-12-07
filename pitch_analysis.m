@@ -2,10 +2,11 @@ clear;
 clc;
 
 %Plot controlling variables 
-plot_tiles = 1;
+plot_tiles = 0;
 plot_stats = 1;
+plot_fft = 0;
 
-metadata = metadata_init( "./clean_audio");
+metadata = metadata_init( "./clean_audio_small");
 
 for i = 1:length(metadata.F_NAME)
     if metadata.LANGUAGE(i) == "english"
@@ -17,7 +18,7 @@ end
 all_avg_pitches = NaN(length(participants(:,1)), 4);
 
 % loop through every participant
-for i = 1
+for i = 1:length(participants)
     disp(" ");
     file_list = find_match_files(["","",participants(i, 1),participants(i,2)], metadata);
     
@@ -30,6 +31,7 @@ for i = 1
         
         %create time array
         t = (0:size(x,1)-1)/fs;
+
         
         %run pitch funtion on whole signal
         winLength = round(0.05*fs);
@@ -38,9 +40,9 @@ for i = 1
         tf0 = idx/fs;
         
         %create new signal with silence removed
-        newAudio = x(1:0.2*fs);
-        thres = 5*max(newAudio);
-        indexOfSound = abs(x) > thres;
+        silence = x(1:0.2*fs); %find value of silence at start
+        thres = 5*max(silence); %create threshold based on silence
+        indexOfSound = abs(x) > thres; %create new signal by removing silence using created threshold
         onlySound = x(indexOfSound);
         t_OnlySound = (0:size(onlySound,1)-1)/fs;
         
@@ -50,10 +52,23 @@ for i = 1
         
         f0_OnlySound_2 = f0_OnlySound;
         tf0_OnlySound_2 = tf0_OnlySound;
+
+%         %---------FFT-----------%
+%         F = fft(onlySound);
+%         f = fs*(0:(length(onlySound)/2))/length(onlySound); %frequency axis for graph depends on Fs
+%         
+%         fft_double = abs(F/length(onlySound));                %2-sided spectrum, has twice the number of points needed
+%         
+%         %create 1-sided spectrum; it is mirrored at freq = 0
+%         %move all to one side, therefore need to double the magnitude
+%         fft_single = fft_double(1:(length(onlySound)/2)+1);  
+%         fft_single(2:end-1) = 2*fft_single(2:end-1); 
+%         
+%         %-----------------------%
         
-        %run harmonic ratio on new signal
+        %run harmonic ratio on new signal to find harmonic sections
         hr = harmonicRatio(onlySound,fs,"Window",hamming(winLength,'periodic'),"OverlapLength",overlapLength);
-        threshold = 0.7*max(hr);
+        threshold = 0.9*max(hr); %create threshold
         f0_OnlySound_2(hr < threshold) = nan;
         tf0_OnlySound_2(hr < threshold) = nan;
         
@@ -110,13 +125,20 @@ for i = 1
             end
         end
 
-
-
         name = regexprep(file_list(j),'_', ' ');
         name = regexprep(name,'.m4a', '');
         name = regexprep(name,'.wav', '');
             
         fprintf("Average pitch for %s = %d Hz \n", name, round(avg_pitch));
+
+        if plot_fft == 1
+            figure('Name' , strcat("FFT Analysis - ", upper(name)))
+            plot(f, fft_single)
+            title('Frequency vs Amplitude')
+            xlabel('Frequency (Hz)')
+            ylabel('|Amplitude|')
+        end
+
 
         if plot_tiles == 1
             figure('Name' , upper(name))
@@ -131,7 +153,7 @@ for i = 1
             nexttile
             plot(tf0,f0)
             ylabel('Pitch (Hz)')
-            title('Audio Signal Silence Removed, Harmonics Only - Pitch Estimation')
+            title('Audio Signal Full - Pitch Estimation')
             axis tight
             
             nexttile
@@ -143,7 +165,7 @@ for i = 1
             nexttile
             plot(tf0_OnlySound,f0_OnlySound)
             ylabel('Pitch (Hz)')
-            title('Audio Signal Silence Removed, Harmonics Only - Pitch Estimation')
+            title('Audio Signal Silence Removed - Pitch Estimation')
             axis tight
             
             nexttile
@@ -163,40 +185,55 @@ for i = 1
             saveas(gcf, strcat("./figures/",name,".png"))
 
         end
-
     end
 end
 
-
-
+c = NaN(length(participants(:,1)),3, 4);
 if plot_stats == 1
 
-    par = [1:length(participants(:,1))];
+    par = [1:length(participants(:,1))];    
 
-    for i = 1:length(all_avg_pitches(:,1))
-        for j = 1:length(all_avg_pitches(1,:))
+% colour_matrix_rgb(:,:,1) = [11 31 148; 61 81 198; 111 131 220; 159 182 232]; %english
+% colour_matrix_rgb(:,:,2) = [0.6350 0.0780 0.1840; 1 0 0; 0.8500 0.3250 0.0980; 0.9290 0.6940 0.1250]; %french
+% colour_matrix_rgb(:,:,3) = [29 118 37; 106 168 79; 147 196 125; 182 215 168]; %german
+% colour_matrix_rgb(:,:,4) = [191 144 0; 241 194 50; 255 217 102; 255 229 153]; %serbo-croatian
+
+size_matrix = [300, 150, 60, 20]; 
+size = NaN(length(participants),4);
+
+    for i = 1:length(all_avg_pitches(:,1)) %number of participants
+        for j = 1:4 %number of languages (4)
             if(proficiency(i,j) == "full")
-                full_array(i) = all_avg_pitches(i,j);
+                size(i, j) = size_matrix(1);
+            end
+            if(proficiency(i,j) == "professional")
+                size(i, j) = size_matrix(2);
+            end
+            if(proficiency(i,j) == "working")
+                size(i, j) = size_matrix(3);
+            end
+            if(proficiency(i,j) == "basic")
+                size(i, j) = size_matrix(4);
             end
         end
     end
 
-    figure(i*j + 2)
-    scatter(par, all_avg_pitches(:,1), 'filled')
-    hold on
-    scatter(par, all_avg_pitches(:,2), 'filled')
-    hold on
-    scatter(par, all_avg_pitches(:,3), 'filled')
-    hold on
-    scatter(par, all_avg_pitches(:,4), 'filled')
-    hold on
-    scatter(par, full_array, 100, 'd')
+    figure(i*j*2)
 
+    title("Scatter Plot of Language Proficiencies")
+    scatter(par, all_avg_pitches(:,1), size(:,1), 'filled') %english
+    hold on
+    scatter(par, all_avg_pitches(:,2),  size(:,2), 'filled') %
+    hold on
+    scatter(par, all_avg_pitches(:,3),  size(:,3), 'filled') %
+    hold on
+    scatter(par, all_avg_pitches(:,4),  size(:,4), 'filled') %
+    hold on
     
     xlabel("Participant")
     ylabel("Average Pitch (Hz)")
 
-    legend("English","French","German","Serbo-Croatian", "Native Language")
+    legend("English","French","German","Serbo-Croatian")
 
     hold off
 
