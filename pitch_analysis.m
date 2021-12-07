@@ -3,7 +3,7 @@ clc;
 
 %Plot controlling variables 
 plot_tiles = 0;
-plot_stats = 0;
+plot_stats = 1;
 
 metadata = metadata_init( "./clean_audio");
 
@@ -23,16 +23,7 @@ for i = 1:length(participants)
     
     %loop though all languages
     for j = 1:length(file_list)
-        
-        if contains(file_list(j),"full")
-            proficiency(i,j) = "full";
-        elseif contains(file_list(j), "professional")
-            proficiency(i,j) = "professional";
-        elseif contains(file_list(j), "working")
-            proficiency(i,j) = "working";
-        elseif contains(file_list(j), "basic")
-            proficiency(i,j) = "basic";
-        end
+     
 
         path = strcat('./clean_audio/', file_list(j));
         [x, fs] = audioread(path);        
@@ -75,13 +66,51 @@ for i = 1:length(participants)
 
         if contains(path,'english') == 1
             all_avg_pitches(i,1) = avg_pitch;
+            if contains(path, "full")
+                proficiency(i,1) = "full";
+            elseif contains(path, "professional")
+                proficiency(i,1) = "professional";
+            elseif contains(path,"working")
+                proficiency(i,1) = "working";
+            elseif contains(path, "basic")
+                proficiency(i,1) = "basic";
+            end
         elseif contains(path,'french') == 1
             all_avg_pitches(i,2) = avg_pitch;
+            if contains(path, "full")
+                proficiency(i,2) = "full";
+            elseif contains(path, "professional")
+                proficiency(i,2) = "professional";
+            elseif contains(path,"working")
+                proficiency(i,2) = "working";
+            elseif contains(path, "basic")
+                proficiency(i,2) = "basic";
+            end
         elseif contains(path,'german') == 1
             all_avg_pitches(i,3) = avg_pitch;
+            if contains(path, "full")
+                proficiency(i,3) = "full";
+            elseif contains(path, "professional")
+                proficiency(i,3) = "professional";
+            elseif contains(path,"working")
+                proficiency(i,3) = "working";
+            elseif contains(path, "basic")
+                proficiency(i,3) = "basic";
+            end
         else
             all_avg_pitches(i,4) = avg_pitch;
+            if contains(path, "full")
+                proficiency(i,4) = "full";
+            elseif contains(path, "professional")
+                proficiency(i,4) = "professional";
+            elseif contains(path,"working")
+                proficiency(i,4) = "working";
+            elseif contains(path, "basic")
+                proficiency(i,4) = "basic";
+            end
         end
+
+
 
         name = regexprep(file_list(j),'_', ' ');
         name = regexprep(name,'.m4a', '');
@@ -138,9 +167,19 @@ for i = 1:length(participants)
     end
 end
 
-par = [1:length(participants(:,1))];
+
 
 if plot_stats == 1
+
+    par = [1:length(participants(:,1))];
+
+    for i = 1:length(all_avg_pitches(:,1))
+        for j = 1:4
+            if(proficiency(i,j) == "full")
+                full_array(i) = all_avg_pitches(i,j);
+            end
+        end
+    end
 
     figure(i*j + 2)
     scatter(par, all_avg_pitches(:,1), 'filled')
@@ -150,16 +189,23 @@ if plot_stats == 1
     scatter(par, all_avg_pitches(:,3), 'filled')
     hold on
     scatter(par, all_avg_pitches(:,4), 'filled')
+    hold on
+    scatter(par, full_array, 100, 'd')
+
     
     xlabel("Participant")
     ylabel("Average Pitch (Hz)")
 
-    legend("English","French","German","Serbo-Croatian")
+    legend("English","French","German","Serbo-Croatian", "Native Language")
 
     hold off
 end
 
+
 avg_eng_pitch = mean(all_avg_pitches(:,1));
-avg_fre_pitch = mean(all_avg_pitches(:,2));
-avg_ger_pitch = mean(all_avg_pitches(:,3));
-avg_sc_pitch = mean(all_avg_pitches(:,4));
+A = all_avg_pitches(:,2);
+avg_fre_pitch = mean(A(~isnan(A)));
+B = all_avg_pitches(:,3);
+avg_ger_pitch = mean(B(~isnan(B)));
+C = all_avg_pitches(:,4);
+avg_sc_pitch = mean(C(~isnan(C)));
