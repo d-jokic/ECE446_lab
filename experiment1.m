@@ -5,6 +5,9 @@
 audio_path = "./clean_audio";
 metadata = metadata_init( audio_path);
 N_entries = height(metadata);
+lan = ["english", "french", "german", "serbian"];
+syl = [21,25,23,23];
+syldict = containers.Map(lan,syl);
 
 
 % Only take native speakers 
@@ -18,6 +21,7 @@ PITCH = NaN(N,1);
 INTENSITY = NaN(N,1);
 INTENSITY_DER = NaN(N,1);
 DURATION = NaN(N,1);
+DUR_PER_SYL = NaN(N,1);
 
 si = soundIntensityMethods;
 sd = soundDurationMethods;
@@ -35,10 +39,11 @@ for i =1:N
     PITCH(i,1) = sp.avg_speech_pitch(y, Fs, false);
     [INTENSITY(i,1) , INTENSITY_DER(i,1)] = si.avg_normalized_sound_intensity_derivative(y, false);
     DURATION(i,1) = sd.audio_duration(y,Fs, false);
+    DUR_PER_SYL(i,1) = DURATION(i,1) / syldict(row.LANGUAGE);
 end
 
 
-results = table(PERSON,LANGUAGE,PITCH,INTENSITY,INTENSITY_DER,DURATION);
+results = table(PERSON,LANGUAGE,PITCH,INTENSITY,INTENSITY_DER,DURATION,DUR_PER_SYL);
 
 % Get the table in string form.
 TString = evalc('disp(results)');
@@ -61,10 +66,11 @@ AVG_PITCH = NaN(4,1);
 AVG_INTENSITY = NaN(4,1);
 AVG_INTENSITY_DER = NaN(4,1);
 AVG_DURATION = NaN(4,1);
+AVG_DUR_PER_SYL = NaN(4,1);
 
 
 for  i=1:4
-    arr = table2array(results(results.LANGUAGE==lan(i),["PITCH","INTENSITY","INTENSITY_DER","DURATION"]));
+    arr = table2array(results(results.LANGUAGE==lan(i),["PITCH","INTENSITY","INTENSITY_DER","DURATION","DUR_PER_SYL"]));
     avg = mean(arr,1);
 
     LANG(i,1) = lan(i);
@@ -72,11 +78,12 @@ for  i=1:4
     AVG_INTENSITY(i,1) = avg(1,2);
     AVG_INTENSITY_DER(i,1) = avg(1,3);
     AVG_DURATION(i,1) = avg(1,4);
+    AVG_DUR_PER_SYL(i,1) = avg(1,5);
 
 end
 
 
-avg_results = table(LANG,AVG_PITCH,AVG_INTENSITY,AVG_INTENSITY_DER,AVG_DURATION);
+avg_results = table(LANG,AVG_PITCH,AVG_INTENSITY,AVG_INTENSITY_DER,AVG_DURATION,AVG_DUR_PER_SYL);
 
 
 

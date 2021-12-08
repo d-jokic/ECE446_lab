@@ -98,6 +98,44 @@ legend("English","French","German","Serbo-Croatian")
 
 hold off
 
+%%  Avg per profile of relative derivative of intensity
+
+profdict =containers.Map(prof,1:4);
+
+avg_int_der = zeros(length(lan),length(prof));
+instances = zeros(length(lan),length(prof));
+
+
+% loop through the table entries
+for i=1:N_entries
+
+    row = metadata(i,:);
+
+    
+    % find duration for this person
+    Int_der = results_der_int(partdict(row.F_NAME + "_"  + row.L_NAME),landict(row.LANGUAGE));
+
+    % add to the avg array
+    xi = landict(row.LANGUAGE);
+    xj = profdict(row.PROFICIENCY);
+
+    avg_int_der(xi,xj) = avg_int_der(xi,xj)+ Int_der;
+    instances(xi,xj) = instances(xi,xj) +1;
+
+   
+
+end
+
+
+avg_int_der = avg_int_der./instances;
+
+X = categorical({'English','French','German','Serbo-Croatian'});
+bar(X,avg_int_der);
+ylabel("amplitude")
+title("Normalized Intensity Derivative vs Language Proficiency")
+legend({'Full','Professional','Working','Basic'})
+
+
 
 
 

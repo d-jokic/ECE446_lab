@@ -6,6 +6,7 @@ landict = containers.Map(lan,1:4);
 prof = ["full","professional", "working","basic"];
 sizes = [300, 150, 60, 20];
 sizedict =containers.Map(prof,sizes);
+profdict =containers.Map(prof,1:4);
 
 sd = soundDurationMethods();
 
@@ -80,3 +81,41 @@ ylabel("Duration of speech (s)")
 legend("English","French","German","Serbo-Croatian", "Native speaker")
 
 hold off
+
+
+%% Average plot per language-proficiency
+
+avg_dur = zeros(length(lan),length(prof));
+instances = zeros(length(lan),length(prof));
+
+
+% loop through the table entries
+for i=1:N_entries
+
+    row = metadata(i,:);
+
+    
+    % find duration for this person
+    dur = results_dur(partdict(row.F_NAME + "_"  + row.L_NAME),landict(row.LANGUAGE));
+
+    % add to the avg array
+    i = landict(row.LANGUAGE);
+    j = profdict(row.PROFICIENCY);
+
+    avg_dur(i,j) = avg_dur(i,j)+ dur;
+    instances(i,j) = instances(i,j) +1;
+
+   
+
+end
+
+
+avg_dur = avg_dur./instances;
+
+X = categorical({'English','French','German','Serbo-Croatian'});
+bar(X,avg_dur);
+ylabel("duration (s)")
+title("Average duration of speech per profile")
+legend({'Full','Professional','Working','Basic'})
+
+
