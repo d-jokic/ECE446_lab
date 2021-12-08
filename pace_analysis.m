@@ -3,7 +3,12 @@
 % define global variables
 lan = ["english", "french", "german", "serbian"];
 landict = containers.Map(lan,1:4);
+prof = ["full","professional", "working","basic"];
+sizes = [300, 150, 60, 20];
+sizedict =containers.Map(prof,sizes);
+
 sd = soundDurationMethods();
+
 
 
 audio_path = "./clean_audio";
@@ -21,7 +26,7 @@ N_participants = length(unique_name);
 partdict = containers.Map(unique_name, 1:N_participants);
 
 % init the array to be plotted
-results_dur = NaN(N_participants, length(lan)+1);
+results_dur = NaN(N_participants, length(lan)*2);
 
 
 % loop through the table entries
@@ -41,9 +46,7 @@ for i=1:N_entries
     %append to results
     results_dur(pos,landict(row.LANGUAGE)) = dur;
 
-    if row.PROFICIENCY == "full"
-        results_dur(pos,length(lan)+1) = dur;
-    end
+    results_dur(pos,length(lan)+landict(row.LANGUAGE) ) = sizedict(row.PROFICIENCY);
 
 
 
@@ -53,16 +56,19 @@ end
 %% Plot the duration results
 
 
-scatter(1:N_participants, results_dur(:,1), 'filled')
+scatter(1:N_participants, results_dur(:,1), results_dur(:,5),'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants,results_dur(:,2), 'filled')
+scatter(1:N_participants,results_dur(:,2), results_dur(:,6),'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_dur(:,3), 'filled')
+scatter(1:N_participants, results_dur(:,3),results_dur(:,7), 'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_dur(:,4), 'filled')
+scatter(1:N_participants, results_dur(:,4),results_dur(:,8), 'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_dur(:,5), 100,'d')
-hold on
+
 
 
 

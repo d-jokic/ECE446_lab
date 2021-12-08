@@ -3,6 +3,9 @@
 % define global variables
 lan = ["english", "french", "german", "serbian"];
 landict = containers.Map(lan,1:4);
+prof = ["full","professional", "working","basic"];
+sizes = [300, 150, 60, 20];
+sizedict =containers.Map(prof,sizes);
 
 
 audio_path = "./clean_audio";
@@ -20,8 +23,8 @@ N_participants = length(unique_name);
 partdict = containers.Map(unique_name, 1:N_participants);
 
 % init the array to be plotted
-results_int = NaN(N_participants, length(lan));
-results_der_int = NaN(N_participants, length(lan));
+results_int = NaN(N_participants, length(lan)*2);
+results_der_int = NaN(N_participants, length(lan)*2);
 
 % loop through the table entries
 for i=1:N_entries
@@ -42,6 +45,8 @@ for i=1:N_entries
     results_int(pos,landict(row.LANGUAGE)) = Int;
     results_der_int(pos,landict(row.LANGUAGE)) = Int_der;
 
+    results_int(pos,length(lan)+landict(row.LANGUAGE) ) = sizedict(row.PROFICIENCY);
+    results_der_int(pos,length(lan)+landict(row.LANGUAGE) ) = sizedict(row.PROFICIENCY);
 end
 
 
@@ -50,35 +55,44 @@ end
 tiledlayout(2,1)
 
 nexttile
-scatter(1:N_participants, results_int(:,1), 'filled')
+scatter(1:N_participants, results_int(:,1),results_int(:,5), 'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_int(:,2), 'filled')
+scatter(1:N_participants, results_int(:,2), results_int(:,6),'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_int(:,3), 'filled')
+scatter(1:N_participants, results_int(:,3), results_int(:,7),'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_int(:,4), 'filled')
+scatter(1:N_participants, results_int(:,4),results_int(:,8), 'filled')
+alpha(0.8)
 hold on
 
 xlabel("Participant")
-ylabel("Average Intensity")
+ylabel("Amplitude")
 
-
+title("Average Intensity of speech")
 
 legend("English","French","German","Serbo-Croatian")
 
 
 nexttile
-scatter(1:N_participants, results_der_int(:,1), 'filled')
+scatter(1:N_participants, results_der_int(:,1),results_der_int(:,5), 'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_der_int(:,2), 'filled')
+scatter(1:N_participants, results_der_int(:,2), results_der_int(:,6),'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_der_int(:,3), 'filled')
+scatter(1:N_participants, results_der_int(:,3),results_der_int(:,7), 'filled')
+alpha(0.8)
 hold on
-scatter(1:N_participants, results_der_int(:,4), 'filled')
+scatter(1:N_participants, results_der_int(:,4),results_der_int(:,8), 'filled')
+alpha(0.8)
 
 xlabel("Participant")
-ylabel("Average Intensity Derivative")
+ylabel("Amplitude")
 
+title("Average Intensity Absolute Derivative")
 
 legend("English","French","German","Serbo-Croatian")
 
