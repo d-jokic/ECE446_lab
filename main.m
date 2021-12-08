@@ -68,7 +68,7 @@ file_list = find_match_files(["english","full","",""], metadata);
 
 si = soundIntensityMethods();
 
-intensity = si.avg_sound_intensity(y, true);
+%intensity = si.avg_sound_intensity(y, true);
 
 si.avg_normalized_sound_intensity_derivative(y, true);
 
