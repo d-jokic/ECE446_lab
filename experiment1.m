@@ -33,8 +33,7 @@ for i =1:N
     PERSON(i,1) = row.F_NAME + "_" + row.L_NAME ;
     LANGUAGE(i,1) = row.LANGUAGE;
     PITCH(i,1) = sp.avg_speech_pitch(y, Fs, false);
-    INTENSITY(i,1) = si.avg_sound_intensity(y, false);
-    INTENSITY_DER(i,1) = si.avg_sound_intensity_derivative(y, false);
+    [INTENSITY(i,1) , INTENSITY_DER(i,1)] = si.avg_normalized_sound_intensity_derivative(y, false);
     DURATION(i,1) = sd.audio_duration(y,Fs, false);
 end
 

@@ -69,11 +69,11 @@ scatter(1:N_participants, results_dur(:,4),results_dur(:,8), 'filled')
 alpha(0.8)
 hold on
 
+title("Duration of speech")
 
 
-
-xlabel("Participant")
-ylabel("Duration of speech")
+xlabel("Participant number")
+ylabel("Duration of speech (s)")
 
 
 
