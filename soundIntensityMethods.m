@@ -108,6 +108,59 @@ classdef soundIntensityMethods
                 hold off;
             end
          end
+
+         function [mean_intensity , mean_intensity_derivative] = avg_normalized_sound_intensity_derivative(sig, plot_flag)
+            
+            % absolut value of sig
+            intensity = abs(sig);
+
+            % detect envelope
+            env = envelope(intensity,1000, 'peak');
+
+            % remove the silences for the average intensity value
+            thresh = 0.1 * max(env);
+            indexOfLoud = env > thresh; % threshold = 20% of mean value
+            onlyLoudParts = env(indexOfLoud);
+            
+            % average on the parts when the person's speaking
+            mean_intensity = mean(onlyLoudParts);
+
+
+
+            % compute the derivative of the intensity
+            der = diff(env)/mean_intensity;
+            
+            % take
+            mean_intensity_derivative = mean(abs(der));
+            
+            if plot_flag 
+
+                figure(1)
+                tiledlayout(2,1)
+                
+                % signal envelope
+                nexttile()
+                plot(env)
+
+                xlabel("time")
+                ylabel("amplitude")
+        
+                title("Signal envelope")
+                
+                % derivative of signal envelope
+                nexttile()
+                plot(1:length(der),der, 1:length(der),mean_intensity_derivative * ones(1,length(der)))
+                
+                xlabel("time")
+                ylabel("amplitude")
+        
+                title("Derivative of signal envelope")
+                
+                legend("signal envelope derivative", "average absolute intensity derivative")
+
+                hold off;
+            end
+         end
      
      
     end

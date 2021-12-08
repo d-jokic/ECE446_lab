@@ -35,8 +35,8 @@ for i=1:N_entries
     filepath = audio_path + "/" + row.LANGUAGE + "_" + row.PROFICIENCY +"_" + row.F_NAME+ "_" + row.L_NAME + "." + row.TYPE;
 
     [y,Fs] = audioread(filepath);
-    Int = si.avg_sound_intensity(y, false);
-    Int_der = si.avg_sound_intensity_derivative(y, false);
+%     Int = si.avg_sound_intensity(y, false);
+    [Int ,Int_der] = si.avg_normalized_sound_intensity_derivative(y, false);
 
     % find name
     pos= partdict(row.F_NAME + "_" + row.L_NAME);

@@ -70,12 +70,22 @@ si = soundIntensityMethods();
 
 intensity = si.avg_sound_intensity(y, true);
 
-intensity_derivative = si.avg_sound_intensity_derivative(y, true);
+si.avg_normalized_sound_intensity_derivative(y, true);
 
 
 %% Pace related methods
 
 [y,Fs] = audioread("./clean_audio/french_working_diana_jokic.m4a");
 
-duration = audio_duration(y, Fs, true); % third argument is plot_flag
+sd = soundDurationMethods;
 
+duration = sd.audio_duration(y, Fs, true); % third argument is plot_flag
+
+%% Pitch related methods
+
+
+[y,Fs] = audioread("./clean_audio/french_working_diana_jokic.m4a");
+
+sp = soundPitchMethods;
+
+sp.avg_speech_pitch(y, Fs, true);
